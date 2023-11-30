@@ -216,3 +216,123 @@ data_courte = pd.merge(data_diff,residus_lag, on='TIME_PERIOD', how="inner")
 court_terme = sm.OLS(data_courte['OBS_VALUE_y'], sm.add_constant(data_courte[['OBS_VALUE_x','residus']])).fit()
 print(court_terme.summary())
 ##On passe de 1,4% à 1,8% pour la force de rappel, pas de grande différence
+
+
+## Poursuite du code et reprise des analyses
+data = pd.merge(energie_prix_import,IPP_tot, on='TIME_PERIOD', how="inner")
+##Test de co-intégration
+from statsmodels.tsa.stattools import coint
+test_coint = coint(data['OBS_VALUE_x'],data['OBS_VALUE_y'])
+print("p-valeur du test de co-intégration : ", test_coint[1])
+##On ne peut donc pas rejeter l'hypothèse nulle de non co-intégration, de ce fait on ne pourra pas trouver une relation de long terme pour le modèle ECM
+##On pouvait déjà avoir une idée de l'existence ou non d'une relation de co-intégration avec des graphiques
+import plotly.express as px
+energie_prix_import["Series"]="energie"
+IPP_tot["Series"]="IPP"
+data_plot = pd.concat([energie_prix_import,IPP_tot])
+data_plot = data_plot[data_plot.index>"2011-01-31"]
+fig = px.line(data_plot, x=data_plot.index, y='OBS_VALUE', color='Series', title = "graphiques des Séries temporelles considérées", hover_data={'OBS_VALUE':':.2f'})
+fig.show()
+
+##On va donc utiliser d'autres données pour expliciter la méthode des ECM
+init_conn(insee_key='OhPJjhlU6BcU1jgxYWzIWq1RcUka', insee_secret='pjqgGXAy7co3cMD4zZ8aytN5tq4a')
+prix_voit_insee = get_series('010534366')
+prix_voit = prix_voit_insee.loc[:,['TIME_PERIOD','OBS_VALUE']]
+prix_voit['TIME_PERIOD'] = pd.to_datetime(prix_voit['TIME_PERIOD'])
+prix_voit.set_index('TIME_PERIOD',inplace=True)
+prix_voit["Series"]="voiture"
+prix_tissu_insee = get_series('010534078')
+prix_tissu = prix_tissu_insee.loc[:,['TIME_PERIOD','OBS_VALUE']]
+prix_tissu['TIME_PERIOD'] = pd.to_datetime(prix_tissu['TIME_PERIOD'])
+prix_tissu.set_index('TIME_PERIOD',inplace=True)
+prix_tissu["Series"]="tissu"
+prix_caoutc_insee = get_series('010534200')
+prix_caoutc = prix_caoutc_insee.loc[:,['TIME_PERIOD','OBS_VALUE']]
+prix_caoutc['TIME_PERIOD'] = pd.to_datetime(prix_caoutc['TIME_PERIOD'])
+prix_caoutc.set_index('TIME_PERIOD',inplace=True)
+prix_caoutc["Series"]="caoutchouc"
+prix_pneum_insee = get_series('010534202')
+prix_pneum = prix_pneum_insee.loc[:,['TIME_PERIOD','OBS_VALUE']]
+prix_pneum['TIME_PERIOD'] = pd.to_datetime(prix_pneum['TIME_PERIOD'])
+prix_pneum.set_index('TIME_PERIOD',inplace=True)
+prix_pneum["Series"]="preumatique"
+prix_alu_insee = get_series('010534272')
+prix_alu = prix_alu_insee.loc[:,['TIME_PERIOD','OBS_VALUE']]
+prix_alu['TIME_PERIOD'] = pd.to_datetime(prix_alu['TIME_PERIOD'])
+prix_alu.set_index('TIME_PERIOD',inplace=True)
+prix_alu["Series"]="aluminium"
+prix_vis_insee = get_series('010534314')
+prix_vis = prix_vis_insee.loc[:,['TIME_PERIOD','OBS_VALUE']]
+prix_vis['TIME_PERIOD'] = pd.to_datetime(prix_vis['TIME_PERIOD'])
+prix_vis.set_index('TIME_PERIOD',inplace=True)
+prix_vis["Series"]="vis"
+prix_electro_insee = get_series('010534318')
+prix_electro = prix_electro_insee.loc[:,['TIME_PERIOD','OBS_VALUE']]
+prix_electro['TIME_PERIOD'] = pd.to_datetime(prix_electro['TIME_PERIOD'])
+prix_electro.set_index('TIME_PERIOD',inplace=True)
+prix_electro["Series"]="électronique"
+data_plot = pd.concat([prix_voit,prix_tissu,prix_caoutc,prix_pneum,prix_alu,prix_vis,prix_electro])
+data_plot = data_plot[data_plot.index>"2005-01-31"]
+fig = px.line(data_plot, x=data_plot.index, y='OBS_VALUE', color='Series', title = "graphiques des Séries temporelles considérées", hover_data={'OBS_VALUE':':.2f'})
+fig.show()
+
+
+###Simple regression sur les variables différenciées
+##On vérifie d'abord la stationnarité de ces nouvelles variables
+#Construction de la base
+prix_voit = prix_voit[prix_voit.index>"2005-01-31"]
+prix_voit = prix_voit.rename(columns={'OBS_VALUE': 'voit'})
+prix_tissu = prix_tissu[prix_tissu.index>"2005-01-31"]
+prix_tissu = prix_tissu.rename(columns={'OBS_VALUE': 'tissu'})
+prix_caoutc = prix_caoutc[prix_caoutc.index>"2005-01-31"]
+prix_caoutc = prix_caoutc.rename(columns={'OBS_VALUE': 'caoutc'})
+prix_pneum = prix_pneum[prix_pneum.index>"2005-01-31"]
+prix_pneum = prix_pneum.rename(columns={'OBS_VALUE': 'pneum'})
+prix_alu = prix_alu[prix_alu.index>"2005-01-31"]
+prix_alu = prix_alu.rename(columns={'OBS_VALUE': 'alu'})
+prix_vis = prix_vis[prix_vis.index>"2005-01-31"]
+prix_vis = prix_vis.rename(columns={'OBS_VALUE': 'vis'})
+prix_electro = prix_electro[prix_electro.index>"2005-01-31"]
+prix_electro = prix_electro.rename(columns={'OBS_VALUE': 'elect'})
+
+data = pd.merge(prix_voit['voit'],prix_tissu['tissu'], on='TIME_PERIOD', how="inner")
+data = pd.merge(data,prix_caoutc['caoutc'], on='TIME_PERIOD', how="inner")
+data = pd.merge(data,prix_pneum['pneum'], on='TIME_PERIOD', how="inner")
+data = pd.merge(data,prix_alu['alu'], on='TIME_PERIOD', how="inner")
+data = pd.merge(data,prix_vis['vis'], on='TIME_PERIOD', how="inner")
+data = pd.merge(data,prix_electro['elect'], on='TIME_PERIOD', how="inner")
+
+##On différencie les données pour travailler avec des séries stationnaires
+data_diff = data.diff().dropna()
+##On vérifie la stationnarité des séries utilisées
+for i in ['voit','tissu','caoutc','pneum','alu','vis','elect'] :
+    test_adf = adfuller(data_diff[i])
+    print('p-value ', i,' ', test_adf[1])
+
+##Seul le test de stationnarité sur le tissu est dangereux pour notre analyse, les autres variables donnent des résultats acceptables
+X = sm.add_constant(data_diff[['tissu','caoutc','pneum','alu','vis','elect']])
+y = data_diff['voit']
+model = sm.OLS(y, X)
+results = model.fit()
+print(results.summary())
+##Pas terrible...
+
+##Outil de visualisation
+contributions = X * results.params
+y_pred = results.predict(X)
+import matplotlib.pyplot as plt
+plt.scatter(X.index,y, label="Observations", color="blue")
+plt.plot(X.index, y_pred, label = "Valeurs prédites", color = "green")
+plt.legend()
+plt.show()
+
+plt.figure(figsize=(20,15))
+plt.bar(X.index,contributions['tissu'], label = "tissu", color="darkorange",width=20)
+plt.bar(X.index,contributions['caoutc'], label = "caoutc", color="brown",width=20)
+plt.bar(X.index,contributions['pneum'], label = "pneum", color="black",width=20)
+plt.bar(X.index,contributions['alu'], label = "alu", color="lightgray",width=20)
+plt.bar(X.index,contributions['vis'], label = "vis", color="gold",width=20)
+plt.bar(X.index,contributions['elect'], label = "elect", color="lime",width=20)
+plt.plot(X.index, y_pred-contributions['const'], label = "Valeurs prédites", color = "green")
+plt.legend()
+plt.show()
