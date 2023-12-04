@@ -336,3 +336,73 @@ plt.bar(X.index,contributions['elect'], label = "elect", color="lime",width=20)
 plt.plot(X.index, y_pred-contributions['const'], label = "Valeurs prédites", color = "green")
 plt.legend()
 plt.show()
+
+
+###Peut-on avoir des ruptures dans les relations?
+data1 = data_diff[data_diff.index<="2020-01-31"]
+X1 = sm.add_constant(data1[['tissu','caoutc','pneum','alu','vis','elect']])
+y1 = data1['voit']
+data2 = data_diff[data_diff.index>"2020-01-31"]
+X2 = sm.add_constant(data2[['tissu','caoutc','pneum','alu','vis','elect']])
+y2 = data2['voit']
+model1 = sm.OLS(y1, X1)
+results1 = model1.fit()
+print(results1.summary())
+model2 = sm.OLS(y2, X2)
+results2 = model2.fit()
+print(results2.summary())
+##On observe une très forte variabilité des coefficients
+##On peut dès lors voir l'intérêt d'introduire la force de rappel issu d'une équation de long terme, particulièrement adaptée pour modéliser les chocs dus aux crises
+##On va donc dans un premier temps rechercher une équation de long terme
+##Pour rappel, on doit obtenir un résidu stationnaire à l'issu de cette première étape
+##Dans un premier temps on essaie directement la méthode de Stock et Watson
+##Pour limiter le biais introduit à la première étape, Stock et Watson propose des dynamic OLS, où on introduit symétriquement des variations avance et retard dans la première étape
+data_SW = data_diff
+nombre_retard = 2
+for j in ['tissu','caoutc','pneum','alu','vis','elect']:
+    for i in range(1,nombre_retard+1):
+        data_SW[f'Delta_{j}_lag_{i}'] = data_SW[f'{j}']-data_SW[f'{j}'].shift(i)
+        data_SW[f'Delta_{j}_lead_{i}'] = data_SW[f'{j}']-data_SW[f'{j}'].shift(-i)
+data_SW = data_SW.dropna()
+X_SW = data_SW.drop(columns=['voit'])
+##Equation de long terme
+long_terme = sm.OLS(data_SW['voit'], sm.add_constant(X_SW)).fit()
+print(long_terme.summary())
+residus = long_terme.resid
+##test de la stationnarité du résidu estimé en première étape
+res_adf = adfuller(residus)
+print('p-value',res_adf[1])
+##Parfait, le résidu n'est pas stationnaire!!
+
+##Equation de court terme
+##Attention il faut un peu transformer le résidu avant de l'introduire dans l'équation de court terme
+residus_trans = data_SW['voit']-np.sum(long_terme.params[['tissu','caoutc','pneum','alu','vis','elect']]*data_SW[['tissu','caoutc','pneum','alu','vis','elect']], axis=1)-long_terme.params['const']
+residus_lag = pd.Series(residus_trans.shift(1).dropna(), name='residus')
+data_courte = pd.merge(data_diff,residus_lag, on='TIME_PERIOD', how="inner")
+X = sm.add_constant(data_courte[['tissu','caoutc','pneum','alu','vis','elect','residus']])
+y = data_courte['voit']
+model = sm.OLS(y, X)
+results = model.fit()
+print(results.summary())
+##On observe tout de même une amélioration du R2 ajusté
+
+##Outil de visualisation
+contributions = X * results.params
+y_pred = results.predict(X)
+import matplotlib.pyplot as plt
+plt.scatter(X.index,y, label="Observations", color="blue")
+plt.plot(X.index, y_pred, label = "Valeurs prédites", color = "green")
+plt.legend()
+plt.show()
+
+plt.figure(figsize=(20,15))
+plt.bar(X.index,contributions['tissu'], label = "tissu", color="darkorange",width=20)
+plt.bar(X.index,contributions['caoutc'], label = "caoutc", color="brown",width=20)
+plt.bar(X.index,contributions['pneum'], label = "pneum", color="black",width=20)
+plt.bar(X.index,contributions['alu'], label = "alu", color="lightgray",width=20)
+plt.bar(X.index,contributions['vis'], label = "vis", color="gold",width=20)
+plt.bar(X.index,contributions['elect'], label = "elect", color="lime",width=20)
+plt.bar(X.index,contributions['residus'], label = "residus", color="blueviolet",width=20)
+plt.plot(X.index, y_pred-contributions['const'], label = "Valeurs prédites", color = "green")
+plt.legend()
+plt.show()
