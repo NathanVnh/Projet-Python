@@ -406,3 +406,41 @@ plt.bar(X.index,contributions['residus'], label = "residus", color="blueviolet",
 plt.plot(X.index, y_pred-contributions['const'], label = "Valeurs prédites", color = "green")
 plt.legend()
 plt.show()
+
+
+
+
+###Quelques outils de data-visualisation
+##diagramme en radar temporel
+data = pd.merge(prix_voit['voit'],prix_tissu['tissu'], on='TIME_PERIOD', how="inner")
+data = pd.merge(data,prix_caoutc['caoutc'], on='TIME_PERIOD', how="inner")
+data = pd.merge(data,prix_pneum['pneum'], on='TIME_PERIOD', how="inner")
+data = pd.merge(data,prix_alu['alu'], on='TIME_PERIOD', how="inner")
+data = pd.merge(data,prix_vis['vis'], on='TIME_PERIOD', how="inner")
+data = pd.merge(data,prix_electro['elect'], on='TIME_PERIOD', how="inner")
+data_sub = data[(data.index>="2021-01-01")]
+plt.figure(figsize=(25,25))
+fig, ax = plt.subplots(subplot_kw=dict(polar=True))
+ax.plot(data_sub['voit'], label='voit')
+ax.plot(data_sub['pneum'], label='pneum')
+ax.plot(data_sub['alu'], label='alu')
+ax.legend(loc='upper right', bbox_to_anchor=(1.3, 1.0))
+plt.title('Diagramme en Radar Temporel')
+plt.show()
+
+
+#diagramme en boîte temporel
+fig, ax = plt.subplots()
+data.boxplot(ax=ax)
+ax.set_xlabel('Produits')
+ax.set_ylabel('Valeurs')
+plt.title('Diagramme en boîte')
+plt.show()
+
+data_sub = data[(data.index>="2020-01-01")]
+fig, ax = plt.subplots()
+data_sub.boxplot(ax=ax)
+ax.set_xlabel('Produits')
+ax.set_ylabel('Valeurs')
+plt.title('Diagramme en boîte')
+plt.show()
