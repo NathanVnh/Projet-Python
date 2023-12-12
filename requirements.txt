@@ -1,0 +1,10 @@
+pynsee
+pandas
+matplotlib
+numpy
+statsmodels
+fdatetime
+plotly
+geopandas
+seaborn
+openpyxl
