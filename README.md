@@ -55,36 +55,3 @@ L'équation de long terme doit conduire à une relation de co-intégration (comb
 Dans le code du projet vous trouverez plusieurs exemples d'analyses utilisant la méthodologie précédemment développée. 
 Dans un premier temps, afin d'introduire les notions, on étudiera le lien entre la hausse des prix de l'énergie et la hausse des prix de production. On montrera qu'une simple régression par moindres carrés ordinaires ne permet pas de vérifier les tests habituels sur les résidus et donc il est nécessaire de passer par une relation de co-intégration et par une modélisation ECM.
 Dans un second temps, afin d'avoir un plus grand nombre de variables explicatives, on étudiera comment les prix des matières premières nécessaires à la construction automobile ont impacté le prix de production associé. 
-
-#### On utilisera les séries suivantes :
-  - Indice de prix de production de l'industrie française pour le marché français − CPF 29 − Véhicules automobiles, remorques et semi remorques  
-Prix de base − Base 2015 − Données mensuelles brutes – Identifiant 010534366
-
-   - Indice de prix de production de l'industrie française pour le marché français − CPF 13.20 − Tissus  
-Prix de base − Base 2015 − Données mensuelles brutes – Identifiant 010534078
-  - Indice de prix de production de l'industrie française pour le marché français − CPF 19.20 − Produits du raffinage du pétrole  
-Prix de base − Base 2015 − Données mensuelles brutes – Identifiant 010534157
-  - Indice de prix de production de l'industrie française pour le marché français − CPF 20.12 − Colorants, pigments et agents tannants  
-Prix de base − Base 2015 − Données mensuelles brutes – Identifiant 010534160
-  - Indice de prix de production de l'industrie française pour le marché français − CPF 22 − Produits en caoutchouc et en plastique  
-Prix de base − Base 2015 − Données mensuelles brutes – Identifiant 010534200
-  - Indice de prix de production de l'industrie française pour le marché français − CPF 22.11 − Pneumatiques; rechapage et resculptage de pneumatiques  
-Prix de base − Base 2015 − Données mensuelles brutes – Identifiant 010534202
-  - Indice de prix de production de l'industrie française pour le marché français − CPF 23.1 − Verre et articles en verre  
-Prix de base − Base 2015 − Données mensuelles brutes – Identifiant 010534227
-  - Indice de prix de production de l'industrie française pour le marché français − CPF 24 − Produits métallurgiques  
-Prix de base − Base 2015 − Données mensuelles brutes – Identifiant 010534264
-  - Indice de prix de production de l'industrie française pour le marché français − CPF 24.42 − Aluminium  
-Prix de base − Base 2015 − Données mensuelles brutes – Identifiant 010534272
-  - Indice de prix de production de l'industrie française pour le marché français − CPF 24.43 − Plomb, zinc et étain  
-Prix de base − Base 2015 − Données mensuelles brutes – Identifiant 010534275
-  - Indice de prix de production de l'industrie française pour le marché français − CPF 24.44 − Cuivre  
-Prix de base − Base 2015 − Données mensuelles brutes – Identifiant 010534276
-  - Indice de prix de production de l'industrie française pour le marché français − CPF 25.94 − Vis et boulons  
-Prix de base − Base 2015 − Données mensuelles brutes – Identifiant 010534314
-  - Indice de prix de production de l'industrie française pour le marché français − CPF 26.1 − Composants et cartes électroniques  
-Prix de base − Base 2015 − Données mensuelles brutes – Identifiant 010534318
-  - Indice de prix de production de l'industrie française pour le marché français − A38 CJ, CPF 27 − Équipements électriques  
-Prix de base − Base 2015 − Données mensuelles brutes – Identifiant 010534471
-  - Indice de prix de production de l'industrie française pour le marché français − A21 D, CPF 35 − Électricité, gaz, vapeur et air conditionné  
-Prix de marché − Base 2015 − Données mensuelles brutes – Identifiant 010534835
