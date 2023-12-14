@@ -1,7 +1,7 @@
 # Projet Python
-Git pour le Projet de Python pour la data-science
+**Dépôt GitHub pour le Projet de Python pour la data-science (ENSAE)**
 
-Ce projet a pour but de lister un ensemble non exhaustif d'outils pour analyser l'inflation à partir de séries macroéconomiques provenant de l'Insee. 
+L'idée de ce projet est de lister un ensemble non exhaustif d'outils pour analyser l'inflation à partir de séries macroéconomiques provenant de l'Insee et d'Eurostat. Nous montrerons que l'idée naïve d'utiliser l'outil de base des statisticiens qu'est la régressions des moindres carrés ordinaires rend les coefficients et les tests difficilement interprétables. Nous introduirons, au moyen de 2 exemples, une méthode de modélisation qui permet de corriger cela.
 
 
 ## Récupération des données
@@ -12,22 +12,18 @@ Les données sont récupérées via l'API BDM de l'Insee en utilisant le package
 On va s'intéresser ici à des Séries Temporelles, il est donc possible en première analyse de réaliser une décomposition en tendance, saisonnalité et résidus pour avoir notamment une idée des variations qu'ont pu connaître les séries d'intérêt et mettre en évidence les chocs par l'étude du processus résiduel.
 
 ### Tests statistiques
-On peut tester la stationnarité des processus considérée grâce au **test augmenté de Dickey-Fuller**. La stationnarité implique que les propriétés statistiques de la série (espérance, variance, auto-corrélation) ne varient pas dans le temps. A noter que l'hyptohèse nulle est celle de non-stationnarité.
+On peut tester la stationnarité des processus considérés grâce au **test augmenté de Dickey-Fuller**. La stationnarité implique que les propriétés statistiques de la série (espérance, variance, auto-corrélation) ne varient pas dans le temps. A noter que l'hyptohèse nulle est celle de non-stationnarité.
 
 On peut tester l'autocorrélation des résidus avec le **test de Durbin-Watson**. L'hypothèse nulle stipule qu'il y a non auto-corrélation. Le test de Durbin-Watson conduit à régresser le résidu à l'instant t sur le résidu précédent au temps t-1 selon le modèle : 
 $\epsilon_{t}$ = $\beta$ $\epsilon_{t-1}$ + $u_{t}$ avec $u_{t}$ un bruit blanc de régression classique et $\epsilon_{t}$ le résidu de la régression OLS pour laquelle on veut tester l'autocorrélation résiduelle.
 
-Dans le cas d'autocorrélation des erreurs, on peut utiliser la **procédure de Cochrane-Orcutt** qui calcule l'autocorrélation empirique des résidus ($\rho$) puis crée les variables $Y_{t}$ - $\rho_{t-1}$ et idem pour les variables explicatives et 
-calcule l'autocorrélation des résidus de cette nouvelle régression puis on ré-itère cette opération jusqu'à ce qu'on obtienne une autocorrélation nulle
-
 On peut tester l'homoscédasticité des résidus par le **test de White**, d'hypothèse nulle l'homoscédasticité des résidus.
 
 Le **test de Jarque-Bera** permet de conclure quant à la normalité du processus résiduel (donc non autocrrélation et homoscédasticité en plus), son hypothèse nulle est la distribution normale.
-On peut également utiliser le **test de Chow** pour vérifier l'existence ou non de rupture dans la modélisation. Ce test consiste à comparer les coefficients de 2 régressions sur des plages temporelles différentes et son hypothèse nulle est l'égalité des coefficients entre les 2 modèles.
 
 
 ### Modélisation par Error Correction Model
-Pour étudier les déterminants macroéconomiques de l'inflation, il convient de mettre en place des modèles de régression. Or, les formules habituelles d'économétrie impliquent qu'il faille travailler avec des séries temporelles stationnaires puisque, par exemple, la moyenne des variables est susceptible de diverger avec le nombre d'observations si la série considérée n'est pas stationnaire. Toutefois, les séries considérées en macro-économie ne sont pas stationnaires (au minimum intégrées d'ordre 1).
+Pour étudier les déterminants macroéconomiques de l'inflation, il convient de mettre en place des modèles de régression. Or, les formules habituelles d'économétrie impliquent qu'il faille travailler avec des séries temporelles stationnaires puisque, par exemple, la moyenne des variables est susceptible de diverger avec le nombre d'observations si la série considérée n'est pas stationnaire. Toutefois, les séries considérées en macro-économie ne sont pas toujours stationnaires (souvent au minimum intégrées d'ordre 1).
 #### Notion de non stationnarité
 > Une série $X_{t}$ est dite stationnaire si ses deux premiers moments, à savoir son espérance $\mu_{t}$ = E($X_{t}$) et les autocovariances $\gamma_{tk}$ = cov($X_{t}$, $X_{k}$), sont finies et indépendantes du temps.
 Visuellement une telle série tend à retourner à sa moyenne quand elle s'en est écartée sous l'effet de chocs.
@@ -45,13 +41,11 @@ Il est tout de même possible de régresser des séries non stationnaires entre 
 Afin de réduire le biais d'estimation propre à l'équation de long terme, on utilise la **méthode d'estimation de Stock et Watson** consistant à introduire des variations avancées et retardées des variables explicatives.
 Pour tester l'existence d'une relation de co-intégration, on peut utiliser le test de Johansen basé sur la statistique de la trace, d'hypothèse nulle l'absence de relation de co-intégration, ou le test de co-intégration de Phillips-Ouliaris d'hypothèse nulle la non co-intégration de la matrice des variables.
 
-Afin de proposer une évaluation de la volatilité des coefficients de l'équation de long terme, des "intervalles d'incertitude" peuvent être construits. En effet, l'équation de long terme conduit à régresser entre elles des séries non stationnaires, et de ce fait, les estimateurs des coefficients de régression ne suivent pas les lois asymptotiques habituelles, et on ne peut donc pas juger de leur significativité en utilisant les tests de Student. La méthodologie suivie consiste à créer des indicatrices valant 1 pour un mois donné afin de capter l'effet propre à ce trimestre ce qui revient à enlever l'observation correspondante. On utilise ensuite la distribution empirique des coefficients obtenus pour les différents modèles pour construire des intervalles en utilisant les quantiles 0,05 et 0,95 de la loi qui s'ajuste au mieux aux données.
-
-L'équation de long terme doit conduire à une relation de co-intégration (combinaison linéaire stationnaire de séries intégrées d'ordre 1), impliquant notamment que les résidus doivent être stationnaires, ce qui va permettre de rendre compte de la qualité du modèle. Concernant l'équation de court terme, il est nécessaire d'obtenir un résidu homoscédastique et non auto-corrélé (bruit blanc) ; l'éventuelle autocorrélation résiduelle de seconde étape a été traitée par la **méthode de Cochrane Orcutt**.
-
 
 
 ## Quelques exemples
-Dans le code du projet vous trouverez plusieurs exemples d'analyses utilisant la méthodologie précédemment développée. 
-Dans un premier temps, afin d'introduire les notions, on étudiera le lien entre la hausse des prix de l'énergie et la hausse des prix de production. On montrera qu'une simple régression par moindres carrés ordinaires ne permet pas de vérifier les tests habituels sur les résidus et donc il est nécessaire de passer par une relation de co-intégration et par une modélisation ECM.
-Dans un second temps, afin d'avoir un plus grand nombre de variables explicatives, on étudiera comment les prix des matières premières nécessaires à la construction automobile ont impacté le prix de production associé. 
+Dans le code du projet vous trouverez plusieurs exemples d'analyses utilisant la méthodologie précédemment développée.
+
+Dans un premier temps, afin d'introduire les notions, on étudiera le lien entre la hausse des prix de l'énergie et la hausse des prix de production. On montrera qu'une simple régression par moindres carrés ordinaires ne permet pas de vérifier les tests habituels sur les résidus et on introduira la notion de co-intégration et de modélisation ECM.
+
+Dans un second temps, on étudiera comment les prix des matières premières nécessaires à la construction automobile ont impacté le prix de production associé. Après une brève description des caractéristiques des variables utilisées, notamment au moyen d'outils graphiques, nous chercherons à montrer l'apport de l'introduction d'une équation de long terme et d'une force de rappel dans l'équation de court terme. En effet, il peut être tentant de se limiter à travailler sur les différences du premier ordre des variables considérées mais, en période de crise économique, l'idée de corriger de l'éloignement à une relation de long terme entre le prix des matières premières et le prix du produit fini a une importance toute particulière. Nous verrons donc en quoi l'introduction de cette "force de rappel" modifie et améliore la modélisation de notre équation de court terme (en différences premières).
