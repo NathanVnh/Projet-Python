@@ -1,18 +1,3 @@
-##Installation des packages nécessaires pour l'analyse
-from pynsee.macrodata.get_series import get_series
-import pandas as pd
-import matplotlib.pyplot as plt
-import numpy as np
-from statsmodels.tsa.seasonal import seasonal_decompose
-from statsmodels.tsa.stattools import adfuller
-import statsmodels.api as sm
-from datetime import datetime
-import plotly.express as px
-from statsmodels.tsa.stattools import coint
-##Connexion avec l'API INSEE
-from pynsee import init_conn
-
-
 class ProjetPython:
     '''
     Classe qui permet de gérer l'import des données via l'API BDM INSEE en connaissant les idbank, et qui permet certaines mises au format Séries temporelles pour rendre le code moins chargé.
@@ -35,7 +20,6 @@ class ProjetPython:
         self.f_value="OBS_VALUE" 
         self.f_value_x="OBS_VALUE_x" 
         self.f_value_y="OBS_VALUE_y" 
-        init_conn(insee_key='OhPJjhlU6BcU1jgxYWzIWq1RcUka', insee_secret='pjqgGXAy7co3cMD4zZ8aytN5tq4a')
         
     def import1(self,idbank):
         '''
@@ -88,5 +72,3 @@ class ProjetPython:
         df = df[df.index>time]
         df = df.rename(columns={'OBS_VALUE': name})
         return df
-
-
