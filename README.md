@@ -6,7 +6,10 @@ L'idée de ce projet est de lister un ensemble non exhaustif d'outils pour analy
 
 ## Récupération des données
 Les données sont récupérées via l'API BDM de l'Insee en utilisant le package *pynsee*, cette opération nécessite l'initalisation d'une clé et d'un code de sécurité qui sont ensuite transmissibles à d'autres utilisateurs. Ainsi ce code est lançable depuis n'importe quelle machine sans nécessité au préalable d'avoir créé un compte sur les API Insee. On se sert ici des Idbank des séries qui peuvent être identifiées au préalable pour vos séries d'intérêt directement via le site de l'Insee https://www.insee.fr/fr/information/3128533
+Un autre type de données considérée sont les données issues d'eurostats (https://ec.europa.eu/eurostat/fr/web/hicp/database), notamment concernant l'IPCH, l'indice des prix à la consommation harmonisés et de ses diverses composantes, par exemple le prix des fruits. 
 
+## Programmation orientée objet
+Nous nous intéresserons plus à l'importation, la visualisation et la modélisation des données qu'à l'interprétation proprement socioéconomique qu'on peut avoir de ces résultats. Pour ce faire, nous avons réalisé 2 classes, chacune utilisée en fonction de l'origine des données (Insee ou Eurostats). A travers ces classes, des attributs et méthodes ont été codéss afin de pouvoir généraliser les analyses que nous allons faire sur n'importe quelles données issues de ces 2 bases de données. Ainsi, des méthodes ont été codées pour réaliser l'import des données, leur nettoyage ainsi que différentes visualisations et modélisations possible à partir de ces séries temporelles.
 
 ## Méthodologie pour l'analyse des déterminants macroéconomiques de l'inflation
 On va s'intéresser ici à des Séries Temporelles, il est donc possible en première analyse de réaliser une décomposition en tendance, saisonnalité et résidus pour avoir notamment une idée des variations qu'ont pu connaître les séries d'intérêt et mettre en évidence les chocs par l'étude du processus résiduel.
