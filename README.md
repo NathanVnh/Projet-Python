@@ -1,6 +1,7 @@
 # Projet Python
 
 Le notebook à lancer se nomme execute.
+
 **Dépôt GitHub pour le Projet de Python pour la data-science (ENSAE)**
 
 L'idée de ce projet est de lister un ensemble non exhaustif d'outils pour analyser l'inflation à partir de séries macroéconomiques provenant de l'Insee et d'Eurostat. Nous montrerons que l'idée naïve d'utiliser l'outil de base des statisticiens qu'est la régressions des moindres carrés ordinaires rend les coefficients et les tests difficilement interprétables. Nous introduirons, au moyen de 2 exemples, une méthode de modélisation qui permet de corriger cela.
