@@ -8,3 +8,7 @@ plotly
 geopandas
 seaborn
 openpyxl
+geopandas
+shapely
+datetime
+plotly
