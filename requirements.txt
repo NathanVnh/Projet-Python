@@ -3,7 +3,7 @@ pandas
 matplotlib
 numpy
 statsmodels
-fdatetime
+# fdatetime
 plotly
 geopandas
 seaborn
